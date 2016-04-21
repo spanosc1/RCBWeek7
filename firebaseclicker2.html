@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Click Button with Firebase!</title>
+
+    <!-- Allows us to use firebase code -->
+    <script src="https://cdn.firebase.com/js/client/2.4.1/firebase.js"></script>
+</head>
+<body>
+
+    <h1>Ouch! You've clicked me <span id="clickValue"></span> times!</h1>
+    <button id="clickButton">Click Me!!!!</button>
+
+    <script src="https://code.jquery.com/jquery-2.2.1.min.js"></script>
+    <script>
+
+    // Sets up firebase object connected to the database at the url
+    var clickData = new Firebase("https://rcb-jpd.firebaseio.com/");
+    var clickCounter = 0;    
+    
+    // Listener for the button on our page
+    $("#clickButton").on("click", function() {
+
+        // Increment this value whenever you click the button
+        clickCounter++;
+
+        // Sets the value in the database to the number of clicks
+        clickData.set({
+            clickCount: clickCounter
+        });
+    })
+
+    // Listener for when the firebase object has a new value, gets a snapshot object from firebase
+    clickData.on("value", function(snapshot) {
+
+        // Logs the value of the data in the snapshot to the console
+        console.log(snapshot.val());
+
+        // Updates the clickValue element in HTML to have the new value recieved from firebase
+        $("#clickValue").html(snapshot.val().clickCount);
+
+        // Updates the local variable clickCounter with the new one from firebase
+        clickCounter = snapshot.val().clickCount;
+
+    // If there is an error in recieving the data from firebase, this function executes instead
+    }, function (errorObject) {
+
+        // Log to the console the error code
+          console.log("The read failed: " + errorObject.code);
+    
+    });
+
+    </script>
+
+</body>
+</html>
